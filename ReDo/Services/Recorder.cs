@@ -46,8 +46,16 @@ namespace ReDo.Services
 
         public void StartPlayBack()
         {
-            //ClickUtility clickUtility = new ClickUtility();
-            //clickUtility.PerformClick(instructions.X, instructions.Y);
+            foreach (Instructions instr in instructions)
+            {
+                if (instr != null && instr.Type == UtilityType.Click)
+                {
+                    ClickUtility clickUtility = new ClickUtility();
+                    clickUtility.PerformClick(instr.X, instr.Y);
+                }
+
+                //TODO: Add KeyBoard Interaction.
+            }
         }
     }
 }

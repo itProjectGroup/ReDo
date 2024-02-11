@@ -63,14 +63,7 @@ namespace ReDo
         private void PlaybackButton_Click(object sender, EventArgs e)
         {
             var recorder = new Recorder();
-            if (isRecording = !isRecording)
-            {
-                recorder.StartRecording();
-            }
-            else
-            {
-                recorder.StopRecording();
-            }
+            recorder.StartPlayBack();
         }
 
         void MyButton_OnClick(object sender, RoutedEventArgs e)
