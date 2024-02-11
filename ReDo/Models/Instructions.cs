@@ -8,8 +8,9 @@ namespace ReDo.Models
 {
     public class Instructions
     {
-        public Instructions(UtilityType type, int x, int y, string information = null) {
-            X = x; Y = y;Type = type; Information = information;
+        public Instructions(UtilityType type, int x, int y, string information = null)
+        {
+            X = x; Y = y; Type = type; Information = information;
         }
         public UtilityType Type { get; set; }
         public int X { get; set; }

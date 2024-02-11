@@ -1,6 +1,7 @@
 ﻿using ReDo.CustomEvents;
 using ReDo.Services;
 using ReDo.Utility;
+using ReDo.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,13 +23,44 @@ namespace ReDo
     public partial class MainWindow : Window
     {
         public static bool isRecording = false;
+        MainWindowViewModel mainViewModel;
         public MainWindow()
         {
+            mainViewModel = new MainWindowViewModel();
+            mainViewModel.BtnData = new Models.UIElementBtnState { btnName = "Record", btnPath = "M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z" };
+            DataContext = mainViewModel;
+
             InitializeComponent();
+
+            /*
+             * Background Handlers
+             */
             KeyDown += new KeyEventHandler(MainWindow_KeyDown);
         }
 
-        private void Button_Click(object sender, EventArgs e)
+        private void StartButton_Click(object sender, EventArgs e)
+        {
+            var recorder = new Recorder();
+            if (isRecording = !isRecording)
+            {
+                this.WindowState = WindowState.Minimized;
+                recorder.StartRecording();
+            }
+            else
+            {
+                recorder.StopRecording();
+            }
+        }
+
+        private void StopButton_Click(object sender, EventArgs e)
+        {
+            var recorder = new Recorder();
+            isRecording = !isRecording;
+            MessageBox.Show("Ending Recording.");
+            recorder.StopRecording();
+        }
+
+        private void PlaybackButton_Click(object sender, EventArgs e)
         {
             var recorder = new Recorder();
             if (isRecording = !isRecording)
@@ -51,6 +83,8 @@ namespace ReDo
             if (e.Key == Key.Escape)
             {
                 MouseHook.stop();
+                MessageBox.Show("Recording Stopped by user.");
+                this.WindowState = WindowState.Minimized;
             }
         }
     }

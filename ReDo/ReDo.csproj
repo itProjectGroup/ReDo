@@ -62,11 +62,13 @@
     </ApplicationDefinition>
     <Compile Include="CustomEvents\HookEventArgs.cs" />
     <Compile Include="Models\Instructions.cs" />
+    <Compile Include="Models\UIElementBtnState.cs" />
     <Compile Include="Models\UtilityType.cs" />
     <Compile Include="Services\Recorder.cs" />
     <Compile Include="Utility\ClickUtility.cs" />
     <Compile Include="Utility\KeysUtility.cs" />
     <Compile Include="Utility\MouseHook.cs" />
+    <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

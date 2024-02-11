@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace ReDo.Services
@@ -33,7 +34,7 @@ namespace ReDo.Services
             }
         }
 
-        public void StopRecording() { MouseHook.stop(); }
+        public void StopRecording() { MouseHook.stop(); MessageBox.Show("Recording Stopped by user."); }
 
         //private void Event(object sender, EventArgs e) => Console.WriteLine("Left mouse click!");
 

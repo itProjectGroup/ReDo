@@ -4,9 +4,86 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
-        xmlns:local="clr-namespace:ReDo"
+        xmlns:local="clr-namespace:ReDo" xmlns:viewModels="clr-namespace:ReDo.ViewModels"
         mc:Ignorable="d"
-        Title="ReDo - Record and Playback" Height="100" Width="400">
+        Title="ReDo - Record and Playback" MaxHeight="400" MaxWidth="400">
+    <Window.Resources>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="#373737" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontFamily" Value="./#Segoe UI" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border CornerRadius="4" Background="{TemplateBinding Background}">
+                            <Grid>
+                                <ContentPresenter x:Name="MyContentPresenter" Content="{TemplateBinding Content}"/>
+                            </Grid>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E59400" />
+                                <Setter Property="Foreground" Value="White" />
+                                <!--<Setter TargetName="PathIcon" Property="Fill" Value="Black" />-->
+                            </Trigger>
+
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="OrangeRed" />
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <StackPanel x:Key="PlayPauseBtnCollection">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MaxWidth="40"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <Path x:Name="PathIcon" Width="20" Stretch="Fill" Fill="#4C87B3" Data="{Binding BtnData.btnPath}" Margin="0,15,0,5"  Grid.Column="0"/>
+                <TextBlock Name="MainContent" Text="{Binding BtnData.btnName}" FontSize="15" Margin="0,15,0,0" Grid.Column="1" />
+            </Grid>
+        </StackPanel>
+
+        <StackPanel x:Key="StopBtnCollection">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MaxWidth="40"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <Path x:Name="PathIcon1" Width="20" Stretch="Fill" Fill="#4C87B3" Data="{Binding BtnStop.btnPath}" Margin="0,15,0,5"  Grid.Column="0"/>
+                <TextBlock Name="MainContent1" Text="{Binding BtnStop.btnName}" FontSize="15" Margin="0,15,0,0" Grid.Column="1" />
+            </Grid>
+        </StackPanel>
+
+        <StackPanel x:Key="PlaybackBtnCollection">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MaxWidth="40"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <Path x:Name="PathIcon2" Width="20" Stretch="Fill" Fill="#4C87B3" Data="{Binding BtnPlayback.btnPath}" Margin="0,15,0,5"  Grid.Column="0"/>
+                <TextBlock Name="MainContent2" Text="{Binding BtnPlayback.btnName}" FontSize="15" Margin="0,15,0,0" Grid.Column="1" />
+            </Grid>
+        </StackPanel>
+    </Window.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
@@ -15,27 +92,38 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
+            <RowDefinition MinHeight="200"></RowDefinition>
+            <RowDefinition ></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-        <Button FontSize="16" Grid.Row="1" Grid.Column="0" Click="Button_Click">
-            <Button.Content>
-                <fa:FontAwesome Icon="PlayCircle" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            </Button.Content>
-        </Button>
 
-        <Button FontSize="16" Grid.Row="1" Grid.Column="1">
-            <Button.Content>
-                <fa:FontAwesome Icon="camera" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                
-            </Button.Content>
-        </Button>
+        <Button x:Name="btn_start" Height="50" Content="{StaticResource PlayPauseBtnCollection}" VerticalAlignment="Center" Margin="10,0,10,0" Grid.Row="0" Grid.Column="0" Click="StartButton_Click" />
 
-        <Button FontSize="16" Grid.Row="1" Grid.Column="2" Click="MyButton_OnClick">
-            <Button.Content>
-                <fa:FontAwesome Icon="camera" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </Button.Content>
-        </Button>
+        <Button x:Name="btn_stop" Height="50" Content="{StaticResource StopBtnCollection}" VerticalAlignment="Center" Margin="10,0,10,0" Grid.Row="0" Grid.Column="1" Click="StopButton_Click"/>
+
+        <Button x:Name="btn_playback" Height="50" Content="{StaticResource PlaybackBtnCollection}" VerticalAlignment="Center" Margin="10,0,10,0" Grid.Row="0" Grid.Column="2" Click="PlaybackButton_Click"/>
+
+        <RichTextBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,10,0,10">
+            <FlowDocument FontSize="14">
+                <Paragraph Margin="0">
+                    <Run Text="• " Foreground="Black"/> Start the recording by selecting the "Record" option.
+                </Paragraph>
+                <Paragraph Margin="0">
+                    <Run Text="• " Foreground="Black"/> Manually execute the desired steps within the application.
+                </Paragraph>
+                <Paragraph Margin="0">
+                    <Run Text="• " Foreground="Black"/> Conclude the recording by pressing [ESC].
+                </Paragraph>
+                <Paragraph Margin="0">
+                    <Run Text="• " Foreground="Black"/> Save the recorded steps.
+                </Paragraph>
+                <Paragraph Margin="0">
+                    <Run Text="• " Foreground="Black"/> Utilize the "Playback" option to automatically reproduce the previously recorded actions.
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+
+        <TextBlock x:Name="Status" Text="Press [ESC] to Stop a Recording Session " Grid.Row="2" Margin="10,10,0,0" Grid.ColumnSpan="3" FontSize="14"/>
 
     </Grid>
 </Window>
