@@ -2,6 +2,7 @@
 using ReDo.Services;
 using ReDo.Utility;
 using ReDo.ViewModels;
+using ReDo.Windows;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,11 +25,22 @@ namespace ReDo
     {
         public static bool isRecording = false;
         MainWindowViewModel mainViewModel;
+        Recorder recorder;
         public MainWindow()
         {
             mainViewModel = new MainWindowViewModel();
             mainViewModel.BtnData = new Models.UIElementBtnState { btnName = "Record", btnPath = "M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z" };
             DataContext = mainViewModel;
+
+            /*
+             * Placement of the window
+             */
+            SizeChanged += (o, e) =>
+            {
+                var r = SystemParameters.WorkArea;
+                Left = r.Right - ActualWidth;
+                Top = r.Bottom - ActualHeight;
+            };
 
             InitializeComponent();
 
@@ -36,34 +48,33 @@ namespace ReDo
              * Background Handlers
              */
             KeyDown += new KeyEventHandler(MainWindow_KeyDown);
+            recorder = new Recorder();
+
         }
 
         private void StartButton_Click(object sender, EventArgs e)
         {
-            var recorder = new Recorder();
             if (isRecording = !isRecording)
             {
                 this.WindowState = WindowState.Minimized;
-                recorder.StartRecording();
+                this.recorder.StartRecording();
             }
             else
             {
-                recorder.StopRecording();
+                this.recorder.StopRecording();
             }
         }
 
         private void StopButton_Click(object sender, EventArgs e)
         {
-            var recorder = new Recorder();
             isRecording = !isRecording;
-            MessageBox.Show("Ending Recording.");
-            recorder.StopRecording();
+            this.recorder.StopRecording();
+            this.WindowState = WindowState.Maximized;
         }
 
         private void PlaybackButton_Click(object sender, EventArgs e)
         {
-            var recorder = new Recorder();
-            recorder.StartPlayBack();
+            this.recorder.StartPlayBack();
         }
 
         void MyButton_OnClick(object sender, RoutedEventArgs e)

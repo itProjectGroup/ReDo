@@ -12,7 +12,7 @@ namespace ReDo.Utility
 {
     public static class MouseHook
     {
-        public static event HookEventHandler MouseAction = delegate { };
+        public static event MouseHookEventHandler MouseAction = delegate { };
         public static void Start()
         {
             _hookID = SetHook(_proc);

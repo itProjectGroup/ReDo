@@ -15,10 +15,12 @@ namespace ReDo.Services
 {
     public class Recorder
     {
-        ArrayList instructions;
+        static ArrayList instructions;
+        private KeyboardHook KeyboardHook;
         public Recorder()
         {
             instructions = new System.Collections.ArrayList();
+            KeyboardHook = new KeyboardHook();
         }
 
         public void StartRecording()
@@ -26,7 +28,8 @@ namespace ReDo.Services
             try
             {
                 MouseHook.Start();
-                MouseHook.MouseAction += new HookEventHandler(HandleHookEvent);
+                MouseHook.MouseAction += new MouseHookEventHandler(HandleHookEvent);
+                KeyboardHook.KeyIntercepted += KeyboardHook_KeyIntercepted;
             }
             catch (Exception ex)
             {
@@ -34,9 +37,20 @@ namespace ReDo.Services
             }
         }
 
-        public void StopRecording() { MouseHook.stop(); MessageBox.Show("Recording Stopped by user."); }
+        private void KeyboardHook_KeyIntercepted(KeyboardHook.KeyboardHookEventArgs e)
+        {
+            if (e.KeyName == "Escape" && e.KeyCode == 27)
+            {
+                StopRecording();
+            }
+            else
+            {
+                Console.WriteLine($"Received: {e.Instructions.KeyName} and {e.Instructions.KeyCode} ");
+                instructions.Add(e.Instructions);
+            }
+        }
 
-        //private void Event(object sender, EventArgs e) => Console.WriteLine("Left mouse click!");
+        public void StopRecording() { MouseHook.stop(); KeyboardHook.Dispose(); MessageBox.Show("Recording Stopped by user."); }
 
         private void HandleHookEvent(object sender, HookEventArgs e)
         {
@@ -46,15 +60,20 @@ namespace ReDo.Services
 
         public void StartPlayBack()
         {
+            ClickUtility clickUtility = new ClickUtility();
             foreach (Instructions instr in instructions)
             {
                 if (instr != null && instr.Type == UtilityType.Click)
                 {
-                    ClickUtility clickUtility = new ClickUtility();
                     clickUtility.PerformClick(instr.X, instr.Y);
                 }
+                else if (instr != null && instr.Type == UtilityType.Keys)
+                {
+                    //KeysUtility.SendKey(instr.KeyCode);
+                    KeySender keySender = new KeySender();
+                    keySender.sendKey(new IntPtr(), (short)instr.KeyCode);
+                }
 
-                //TODO: Add KeyBoard Interaction.
             }
         }
     }

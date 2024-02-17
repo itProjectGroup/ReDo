@@ -17,5 +17,5 @@ namespace ReDo.CustomEvents
         public Instructions Instructions { get; set; }
     }
 
-    public delegate void HookEventHandler(object sender, HookEventArgs e);
+    public delegate void MouseHookEventHandler(object sender, HookEventArgs e);
 }
