@@ -266,9 +266,9 @@ namespace ReDo.Utility
                 get { return passThrough; }
             }
 
-            private Instructions instruction;
+            private KeyboardInstruction instruction;
 
-            public Instructions Instructions
+            public KeyboardInstruction Instructions
             {
                 get { return instruction; }
                 set { instruction = value; }
@@ -279,7 +279,7 @@ namespace ReDo.Utility
                 keyName = ((Keys)evtKeyCode).ToString();
                 keyCode = evtKeyCode;
                 passThrough = evtPassThrough;
-                instruction = new Instructions(UtilityType.Keys, -1, -1, null, keyCode, keyName);
+                instruction = new KeyboardInstruction(UtilityType.Keys, keyCode, keyName);
             }
 
         }

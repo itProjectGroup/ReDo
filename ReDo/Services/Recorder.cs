@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -17,8 +18,10 @@ namespace ReDo.Services
     {
         static ArrayList instructions;
         private KeyboardHook KeyboardHook;
+        private TimerService timerService;
         public Recorder()
         {
+            timerService = new TimerService();
             instructions = new System.Collections.ArrayList();
             KeyboardHook = new KeyboardHook();
         }
@@ -45,6 +48,9 @@ namespace ReDo.Services
             }
             else
             {
+                var elapsedDelay = timerService.ToggleTimerState();
+                if (elapsedDelay.HasValue)
+                    instructions.Add(new DelayInstruction(UtilityType.Delay, elapsedDelay.Value));
                 Console.WriteLine($"Received: {e.Instructions.KeyName} and {e.Instructions.KeyCode} ");
                 instructions.Add(e.Instructions);
             }
@@ -54,6 +60,9 @@ namespace ReDo.Services
 
         private void HandleHookEvent(object sender, HookEventArgs e)
         {
+            var elapsedDelay = timerService.ToggleTimerState();
+            if (elapsedDelay.HasValue)
+                instructions.Add(new DelayInstruction(UtilityType.Delay, elapsedDelay.Value));
             Console.WriteLine($"Received: {e.Instructions.X} and {e.Instructions.Y} ");
             instructions.Add(e.Instructions);
         }
@@ -63,17 +72,19 @@ namespace ReDo.Services
             ClickUtility clickUtility = new ClickUtility();
             foreach (Instructions instr in instructions)
             {
-                if (instr != null && instr.Type == UtilityType.Click)
+                if (instr != null && instr is MouseInstruction mInstr)
                 {
-                    clickUtility.PerformClick(instr.X, instr.Y);
+                    clickUtility.PerformClick(mInstr.X, mInstr.Y);
                 }
-                else if (instr != null && instr.Type == UtilityType.Keys)
+                else if (instr != null && instr is KeyboardInstruction kInstr)
                 {
-                    //KeysUtility.SendKey(instr.KeyCode);
                     KeySender keySender = new KeySender();
-                    keySender.sendKey(new IntPtr(), (short)instr.KeyCode);
+                    keySender.sendKey((short)kInstr.KeyCode);
                 }
-
+                else if (instr != null && instr is DelayInstruction dInstr)
+                {
+                    Thread.Sleep((int)dInstr.Delay.TotalMilliseconds);
+                }
             }
         }
     }

@@ -9,12 +9,12 @@ namespace ReDo.CustomEvents
 {
     public class HookEventArgs : EventArgs
     {
-        public HookEventArgs(Instructions data)
+        public HookEventArgs(MouseInstruction data)
         {
             Instructions = data;
         }
 
-        public Instructions Instructions { get; set; }
+        public MouseInstruction Instructions { get; set; }
     }
 
     public delegate void MouseHookEventHandler(object sender, HookEventArgs e);

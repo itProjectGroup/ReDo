@@ -9,6 +9,7 @@ namespace ReDo.Models
     public enum UtilityType
     {
         Click,
-        Keys
+        Keys,
+        Delay
     }
 }

@@ -65,6 +65,7 @@
     <Compile Include="Models\UIElementBtnState.cs" />
     <Compile Include="Models\UtilityType.cs" />
     <Compile Include="Services\Recorder.cs" />
+    <Compile Include="Services\TimerService.cs" />
     <Compile Include="Utility\ClickUtility.cs" />
     <Compile Include="Utility\KeyboardHook.cs" />
     <Compile Include="Utility\KeySender.cs" />

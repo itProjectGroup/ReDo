@@ -41,8 +41,7 @@ namespace ReDo.Utility
                 MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
                 X = hookStruct.pt.x;
                 Y = hookStruct.pt.y;
-                MouseAction(null, new HookEventArgs(new Instructions(UtilityType.Click, hookStruct.pt.x, hookStruct.pt.y)));
-                //MouseAction(null, new EventArgs());
+                MouseAction(null, new HookEventArgs(new MouseInstruction(UtilityType.Click, hookStruct.pt.x, hookStruct.pt.y)));
             }
             return CallNextHookEx(_hookID, nCode, wParam, lParam);
         }
