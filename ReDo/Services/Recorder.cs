@@ -16,7 +16,7 @@ namespace ReDo.Services
 {
     public class Recorder
     {
-        static ArrayList instructions;
+        public static ArrayList instructions;
         private KeyboardHook KeyboardHook;
         private TimerService timerService;
         public Recorder()
@@ -70,9 +70,9 @@ namespace ReDo.Services
         public void StartPlayBack()
         {
             ClickUtility clickUtility = new ClickUtility();
-            foreach (Instructions instr in instructions)
+            foreach (IInstructions instr in instructions)
             {
-                if (instr != null && instr is MouseInstruction mInstr)
+                if (instr != null && instr is MouseInstruction mInstr )
                 {
                     clickUtility.PerformClick(mInstr.X, mInstr.Y);
                 }
@@ -86,6 +86,7 @@ namespace ReDo.Services
                     Thread.Sleep((int)dInstr.Delay.TotalMilliseconds);
                 }
             }
+            MessageBox.Show("Playback - All Instructions Complete");
         }
     }
 }

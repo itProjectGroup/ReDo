@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace ReDo.Models
 {
-    public class Instructions
+    public interface IInstructions
     {
-        public UtilityType Type { get; set; }
+        UtilityType Type { get; set; }
     }
 
-    public class MouseInstruction : Instructions
+    public class MouseInstruction : IInstructions
     {
         public MouseInstruction(UtilityType type, int x, int y)
         {
@@ -22,9 +22,10 @@ namespace ReDo.Models
 
         public int X { get; set; }
         public int Y { get; set; }
-    }
+        public UtilityType Type { get; set; }
+}
 
-    public class KeyboardInstruction : Instructions
+    public class KeyboardInstruction : IInstructions
     {
         public KeyboardInstruction(UtilityType type, int keyCode = -1, string keyName = null)
         {
@@ -35,9 +36,10 @@ namespace ReDo.Models
 
         public int KeyCode { get; set; }
         public string KeyName { get; set; }
+        public UtilityType Type { get; set; }
     }
 
-    public class DelayInstruction : Instructions
+    public class DelayInstruction : IInstructions
     {
         public DelayInstruction(UtilityType type, TimeSpan delay = default)
         {
@@ -46,6 +48,7 @@ namespace ReDo.Models
         }
 
         public TimeSpan Delay { get; set; }
+        public UtilityType Type { get; set; }
     }
 }
 

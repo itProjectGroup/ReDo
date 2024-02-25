@@ -1,11 +1,17 @@
-﻿using ReDo.CustomEvents;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using ReDo.CustomEvents;
+using ReDo.Models;
 using ReDo.Services;
 using ReDo.Utility;
 using ReDo.ViewModels;
 using ReDo.Windows;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
@@ -14,6 +20,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Xml;
 using Forms = System.Windows.Forms;
 
 namespace ReDo
@@ -77,9 +84,70 @@ namespace ReDo
             this.recorder.StartPlayBack();
         }
 
-        void MyButton_OnClick(object sender, RoutedEventArgs e)
+        void Import_OnClick(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Clicked");
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.DefaultExt = ".json";
+            openFileDialog.Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*";
+
+            bool? result = openFileDialog.ShowDialog();
+            if (result == true)
+            {
+                string filePath = openFileDialog.FileName;
+                try
+                {
+                    string jsonContent = File.ReadAllText(filePath);
+                    var jsonSerializerSettings = new JsonSerializerSettings()
+                    {
+                        TypeNameHandling = TypeNameHandling.All
+                    };
+                    ArrayList instructionsList = JsonConvert.DeserializeObject<ArrayList>(jsonContent, jsonSerializerSettings);
+                    MessageBox.Show("JSON data loaded successfully!");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error loading JSON data: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private T GetMethod<T>(IInstructions model) where T : IInstructions
+        {
+            var json = JsonConvert.SerializeObject(model);
+            return JsonConvert.DeserializeObject<T>(json);
+        }
+
+        void Export_OnClick(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.DefaultExt = ".json";
+            saveFileDialog.Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*";
+
+            bool? result = saveFileDialog.ShowDialog();
+            if (result == true)
+            {
+                string filePath = saveFileDialog.FileName;
+                try
+                {
+                    var jsonSerializerSettings = new JsonSerializerSettings()
+                    {
+                        TypeNameHandling = TypeNameHandling.All
+                    };
+                    string jsonContent = JsonConvert.SerializeObject(Recorder.instructions, jsonSerializerSettings);
+                    File.WriteAllText(filePath, jsonContent);
+
+                    MessageBox.Show("Automation saved successfully!");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error saving JSON data: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        void OnExit_OnClick(object sender, RoutedEventArgs e)
+        {
+            Close();
         }
 
         private void MainWindow_KeyDown(Object sender, KeyEventArgs e)  //Escape to stop recording.
