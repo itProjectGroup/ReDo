@@ -66,6 +66,7 @@ namespace ReDo
             isRecording = false;
             HideRecordingOverlay();
             WindowState = WindowState.Normal;
+            mainViewModel.RefreshRecordedSteps(Recorder.instructions);
         }
 
         private void ShowRecordingOverlay()
@@ -127,6 +128,8 @@ namespace ReDo
                         TypeNameHandling = TypeNameHandling.All
                     };
                     ArrayList instructionsList = JsonConvert.DeserializeObject<ArrayList>(jsonContent, jsonSerializerSettings);
+                    Recorder.instructions = instructionsList ?? new ArrayList();
+                    mainViewModel.RefreshRecordedSteps(Recorder.instructions);
                     MessageBox.Show("JSON data loaded successfully!");
                 }
                 catch (Exception ex)
@@ -185,6 +188,64 @@ namespace ReDo
                 HideRecordingOverlay();
                 this.WindowState = WindowState.Normal;
             }
+        }
+
+        private void ReselectClick_OnClick(object sender, RoutedEventArgs e)
+        {
+            var step = (sender as System.Windows.Controls.Button)?.Tag as RecordedStepViewModel;
+            if (step == null) return;
+            var win = new Windows.ClickCaptureWindow();
+            win.Owner = this;
+            if (win.ShowDialog() == true && !win.Cancelled)
+            {
+                var instr = Recorder.instructions[step.InstructionIndex] as MouseInstruction;
+                if (instr != null)
+                {
+                    instr.X = win.ResultX;
+                    instr.Y = win.ResultY;
+                    mainViewModel.RefreshRecordedSteps(Recorder.instructions);
+                }
+            }
+        }
+
+        private void WaitEdit_OnClick(object sender, RoutedEventArgs e)
+        {
+            var step = (sender as System.Windows.Controls.Button)?.Tag as RecordedStepViewModel;
+            if (step == null) return;
+            var instr = Recorder.instructions[step.InstructionIndex] as DelayInstruction;
+            if (instr == null) return;
+            var win = new Windows.WaitEditWindow(step.DelayMilliseconds) { Owner = this };
+            if (win.ShowDialog() == true && win.Confirmed)
+            {
+                instr.Delay = TimeSpan.FromMilliseconds(win.ResultMilliseconds);
+                mainViewModel.RefreshRecordedSteps(Recorder.instructions);
+            }
+        }
+
+        private void ChangeKey_OnClick(object sender, RoutedEventArgs e)
+        {
+            var step = (sender as System.Windows.Controls.Button)?.Tag as RecordedStepViewModel;
+            if (step == null) return;
+            var win = new Windows.KeyCaptureWindow { Owner = this };
+            if (win.ShowDialog() == true && !win.Cancelled)
+            {
+                var instr = Recorder.instructions[step.InstructionIndex] as KeyboardInstruction;
+                if (instr != null)
+                {
+                    instr.KeyCode = win.KeyCode;
+                    instr.KeyName = win.KeyName;
+                    mainViewModel.RefreshRecordedSteps(Recorder.instructions);
+                }
+            }
+        }
+
+        private void DeleteStep_OnClick(object sender, RoutedEventArgs e)
+        {
+            var step = (sender as System.Windows.Controls.Button)?.Tag as RecordedStepViewModel;
+            if (step == null) return;
+            if (step.InstructionIndex < 0 || step.InstructionIndex >= Recorder.instructions.Count) return;
+            Recorder.instructions.RemoveAt(step.InstructionIndex);
+            mainViewModel.RefreshRecordedSteps(Recorder.instructions);
         }
     }
 }
