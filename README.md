@@ -56,3 +56,9 @@ In Visual Studio, go to Debug > Start Without Debugging (or press F5). Alternati
 ### Application UI
 ![UI](assets/Screenshot%202026-02-15%20170352.png)
 
+### Recorded Steps
+![UI](assets/RecordedSteps.png)
+
+### Additional
+![UI](assets/ImportExport.png)
+
