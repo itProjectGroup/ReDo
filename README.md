@@ -50,3 +50,9 @@ In Visual Studio, go to Debug > Start Without Debugging (or press F5). Alternati
 ![](https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white)
 
 ![](https://img.shields.io/badge/Microsoft-666666?style=for-the-badge&logo=microsoft&logoColor=white)
+
+## Screenshots
+
+### Application UI
+![UI](assets/Screenshot 2026-02-15 170352.png)
+
