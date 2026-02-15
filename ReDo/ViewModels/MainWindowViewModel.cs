@@ -71,16 +71,18 @@ namespace ReDo.ViewModels
         {
             RecordedSteps.Clear();
             if (instructions == null) return;
-            int index = 0;
-            foreach (var item in instructions)
+            int displayIndex = 0;
+            for (int i = 0; i < instructions.Count; i++)
             {
+                var item = instructions[i];
                 if (item == null) continue;
-                index++;
+                displayIndex++;
                 if (item is MouseInstruction mouse)
                 {
                     RecordedSteps.Add(new RecordedStepViewModel
                     {
-                        Index = index,
+                        Index = displayIndex,
+                        InstructionIndex = i,
                         TypeLabel = "Click",
                         StepType = "Click",
                         Description = $"Click at ({mouse.X}, {mouse.Y})"
@@ -91,7 +93,8 @@ namespace ReDo.ViewModels
                     string keyDisplay = string.IsNullOrEmpty(key.KeyName) ? $"Key code {key.KeyCode}" : key.KeyName;
                     RecordedSteps.Add(new RecordedStepViewModel
                     {
-                        Index = index,
+                        Index = displayIndex,
+                        InstructionIndex = i,
                         TypeLabel = "Key",
                         StepType = "Key",
                         Description = keyDisplay
@@ -99,13 +102,15 @@ namespace ReDo.ViewModels
                 }
                 else if (item is DelayInstruction delay)
                 {
-                    double seconds = delay.Delay.TotalSeconds;
+                    double ms = delay.Delay.TotalMilliseconds;
                     RecordedSteps.Add(new RecordedStepViewModel
                     {
-                        Index = index,
+                        Index = displayIndex,
+                        InstructionIndex = i,
                         TypeLabel = "Wait",
                         StepType = "Delay",
-                        Description = seconds < 1 ? $"{delay.Delay.TotalMilliseconds:F0} ms" : $"{seconds:F2} s"
+                        Description = ms < 1000 ? $"{ms:F0} ms" : $"{delay.Delay.TotalSeconds:F2} s",
+                        DelayMilliseconds = ms
                     });
                 }
             }

@@ -85,6 +85,15 @@
     <Compile Include="Windows\RecordingOverlayWindow.xaml.cs">
       <DependentUpon>RecordingOverlayWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\ClickCaptureWindow.xaml.cs">
+      <DependentUpon>ClickCaptureWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\KeyCaptureWindow.xaml.cs">
+      <DependentUpon>KeyCaptureWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\WaitEditWindow.xaml.cs">
+      <DependentUpon>WaitEditWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -102,6 +111,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\RecordingOverlayWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\ClickCaptureWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\KeyCaptureWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\WaitEditWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
