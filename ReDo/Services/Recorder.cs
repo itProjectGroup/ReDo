@@ -1,4 +1,4 @@
-﻿using ReDo.CustomEvents;
+using ReDo.CustomEvents;
 using ReDo.Models;
 using ReDo.Utility;
 using System;
@@ -19,6 +19,10 @@ namespace ReDo.Services
         public static ArrayList instructions;
         private KeyboardHook KeyboardHook;
         private TimerService timerService;
+
+        /// <summary>Raised when recording is stopped (e.g. by Escape or Stop).</summary>
+        public event EventHandler RecordingStopped;
+
         public Recorder()
         {
             timerService = new TimerService();
@@ -56,7 +60,13 @@ namespace ReDo.Services
             }
         }
 
-        public void StopRecording() { MouseHook.stop(); KeyboardHook.Dispose(); MessageBox.Show("Recording Stopped by user."); }
+        public void StopRecording()
+        {
+            MouseHook.stop();
+            KeyboardHook.Dispose();
+            RecordingStopped?.Invoke(this, EventArgs.Empty);
+            MessageBox.Show("Recording Stopped by user.");
+        }
 
         private void HandleHookEvent(object sender, HookEventArgs e)
         {

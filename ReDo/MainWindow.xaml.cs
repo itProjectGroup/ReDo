@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ReDo.CustomEvents;
@@ -33,6 +33,8 @@ namespace ReDo
         public static bool isRecording = false;
         MainWindowViewModel mainViewModel;
         Recorder recorder;
+        RecordingOverlayWindow recordingOverlay;
+
         public MainWindow()
         {
             mainViewModel = new MainWindowViewModel();
@@ -56,19 +58,41 @@ namespace ReDo
              */
             KeyDown += new KeyEventHandler(MainWindow_KeyDown);
             recorder = new Recorder();
+            recorder.RecordingStopped += Recorder_RecordingStopped;
+        }
 
+        private void Recorder_RecordingStopped(object sender, EventArgs e)
+        {
+            isRecording = false;
+            HideRecordingOverlay();
+            WindowState = WindowState.Normal;
+        }
+
+        private void ShowRecordingOverlay()
+        {
+            if (recordingOverlay == null)
+                recordingOverlay = new RecordingOverlayWindow();
+            recordingOverlay.Show();
+        }
+
+        private void HideRecordingOverlay()
+        {
+            recordingOverlay?.Close();
+            recordingOverlay = null;
         }
 
         private void StartButton_Click(object sender, EventArgs e)
         {
             if (isRecording = !isRecording)
             {
+                ShowRecordingOverlay();
                 this.WindowState = WindowState.Minimized;
                 this.recorder.StartRecording();
             }
             else
             {
                 this.recorder.StopRecording();
+                HideRecordingOverlay();
             }
         }
 
@@ -76,7 +100,8 @@ namespace ReDo
         {
             isRecording = !isRecording;
             this.recorder.StopRecording();
-            this.WindowState = WindowState.Maximized;
+            HideRecordingOverlay();
+            this.WindowState = WindowState.Normal;
         }
 
         private void PlaybackButton_Click(object sender, EventArgs e)
@@ -152,11 +177,13 @@ namespace ReDo
 
         private void MainWindow_KeyDown(Object sender, KeyEventArgs e)  //Escape to stop recording.
         {
-            if (e.Key == Key.Escape)
+            if (e.Key == Key.Escape && isRecording)
             {
+                isRecording = false;
                 MouseHook.stop();
                 MessageBox.Show("Recording Stopped by user.");
-                this.WindowState = WindowState.Minimized;
+                HideRecordingOverlay();
+                this.WindowState = WindowState.Normal;
             }
         }
     }

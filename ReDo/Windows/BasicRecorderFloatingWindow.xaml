@@ -1,12 +1,36 @@
-﻿<Window x:Class="ReDo.Windows.BasicRecorderFloatingWindow"
+<Window x:Class="ReDo.Windows.BasicRecorderFloatingWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ReDo.Windows"
         mc:Ignorable="d"
-        Title="BasicRecorder" Height="100" Width="150" WindowStyle="None">
-    <Grid>
-        <Button x:Name="Text" Content="Hello"  Margin="10"/>
-    </Grid>
+        Title="ReDo Recorder" Height="56" Width="140"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="NoResize" Topmost="True">
+    <Border Background="{StaticResource PrimaryBrush}" CornerRadius="28"
+            BorderBrush="{StaticResource PrimaryHoverBrush}" BorderThickness="1">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.25" Color="Black"/>
+        </Border.Effect>
+        <Grid>
+            <Button x:Name="Text" Content="Recording…" Margin="12,8"
+                    FontSize="13" FontWeight="SemiBold" Cursor="Hand">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Grid>
+    </Border>
 </Window>

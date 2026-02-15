@@ -1,9 +1,28 @@
-﻿<Application x:Class="ReDo.App"
+<Application x:Class="ReDo.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ReDo"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <FontFamily x:Key="FontAwesome">/Fonts/fontawesome-webfont.ttf#FontAwesome</FontFamily>
+
+        <!-- ReDo theme palette -->
+        <Color x:Key="PrimaryColor">#0D9488</Color>
+        <Color x:Key="PrimaryHoverColor">#0F766E</Color>
+        <Color x:Key="PrimaryPressedColor">#115E59</Color>
+        <Color x:Key="SurfaceColor">#F8FAFC</Color>
+        <Color x:Key="SurfaceBorderColor">#E2E8F0</Color>
+        <Color x:Key="TextPrimaryColor">#1E293B</Color>
+        <Color x:Key="TextSecondaryColor">#64748B</Color>
+        <Color x:Key="AccentMutedColor">#5EEAD4</Color>
+
+        <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}"/>
+        <SolidColorBrush x:Key="PrimaryHoverBrush" Color="{StaticResource PrimaryHoverColor}"/>
+        <SolidColorBrush x:Key="PrimaryPressedBrush" Color="{StaticResource PrimaryPressedColor}"/>
+        <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}"/>
+        <SolidColorBrush x:Key="SurfaceBorderBrush" Color="{StaticResource SurfaceBorderColor}"/>
+        <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}"/>
+        <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}"/>
+        <SolidColorBrush x:Key="AccentMutedBrush" Color="{StaticResource AccentMutedColor}"/>
     </Application.Resources>
 </Application>
