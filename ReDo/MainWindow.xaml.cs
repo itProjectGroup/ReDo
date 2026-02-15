@@ -66,6 +66,7 @@ namespace ReDo
             isRecording = false;
             HideRecordingOverlay();
             WindowState = WindowState.Normal;
+            mainViewModel.RefreshRecordedSteps(Recorder.instructions);
         }
 
         private void ShowRecordingOverlay()

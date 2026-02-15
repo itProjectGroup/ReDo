@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:fa="clr-namespace:FontAwesome.WPF;assembly=FontAwesome.WPF"
-        xmlns:local="clr-namespace:ReDo" xmlns:viewModels="clr-namespace:ReDo.ViewModels"
+        xmlns:viewModels="clr-namespace:ReDo.ViewModels"
+        xmlns:converters="clr-namespace:ReDo.Converters"
         mc:Ignorable="d"
         Title="ReDo - Record and Playback"
         MinWidth="380" MinHeight="420" Width="550" Height="480"
@@ -83,6 +83,44 @@
                            VerticalAlignment="Center" Margin="10,0,0,0" Grid.Column="1"/>
             </Grid>
         </StackPanel>
+
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVisibility"/>
+
+        <DataTemplate x:Key="RecordedStepTemplate" DataType="{x:Type viewModels:RecordedStepViewModel}">
+            <Border Background="#F1F5F9" CornerRadius="6" Padding="12,8" Margin="0,0,0,6">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{Binding Index}" FontWeight="SemiBold"
+                               Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,12,0"
+                               VerticalAlignment="Center" MinWidth="20"/>
+                    <Border Grid.Column="1" CornerRadius="4" Padding="6,2" Margin="0,0,12,0"
+                            VerticalAlignment="Center">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding StepType}" Value="Key">
+                                        <Setter Property="Background" Value="#6366F1"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding StepType}" Value="Delay">
+                                        <Setter Property="Background" Value="#64748B"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <TextBlock Text="{Binding TypeLabel}" Foreground="White" FontSize="11" FontWeight="SemiBold"/>
+                    </Border>
+                    <TextBlock Grid.Column="2" Text="{Binding Description}" FontSize="13"
+                               Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
     </Window.Resources>
 
     <Grid>
@@ -123,33 +161,57 @@
             </Grid>
         </Border>
 
-        <!-- Instructions card -->
+        <!-- Content card: How to use (when no steps) or Recorded steps list -->
         <Border Grid.Row="2" Margin="16,12,16,12" Padding="20,16"
                 Background="White" BorderBrush="{StaticResource SurfaceBorderBrush}" BorderThickness="1"
                 CornerRadius="10">
-            <RichTextBox BorderThickness="0" Background="Transparent" IsReadOnly="True"
-                         VerticalScrollBarVisibility="Auto" Padding="0">
-                <FlowDocument FontSize="13" TextAlignment="Left">
-                    <Paragraph Margin="0,0,0,8" Foreground="{StaticResource TextPrimaryBrush}">
-                        <Run FontWeight="SemiBold" Text="How to use:"/>
-                    </Paragraph>
-                    <Paragraph Margin="0,0,0,6" Foreground="{StaticResource TextSecondaryBrush}">
-                        <Run Text="• " Foreground="{StaticResource PrimaryBrush}"/> Start the recording by selecting the "Record" option.
-                    </Paragraph>
-                    <Paragraph Margin="0,0,0,6" Foreground="{StaticResource TextSecondaryBrush}">
-                        <Run Text="• " Foreground="{StaticResource PrimaryBrush}"/> Manually execute the desired steps within the application.
-                    </Paragraph>
-                    <Paragraph Margin="0,0,0,6" Foreground="{StaticResource TextSecondaryBrush}">
-                        <Run Text="• " Foreground="{StaticResource PrimaryBrush}"/> Conclude the recording by pressing <Bold>[ESC]</Bold>.
-                    </Paragraph>
-                    <Paragraph Margin="0,0,0,6" Foreground="{StaticResource TextSecondaryBrush}">
-                        <Run Text="• " Foreground="{StaticResource PrimaryBrush}"/> Save the recorded steps via File → Export.
-                    </Paragraph>
-                    <Paragraph Margin="0,0,0,0" Foreground="{StaticResource TextSecondaryBrush}">
-                        <Run Text="• " Foreground="{StaticResource PrimaryBrush}"/> Use "Playback" to automatically reproduce the recorded actions.
-                    </Paragraph>
-                </FlowDocument>
-            </RichTextBox>
+            <Grid>
+                <!-- How to use – shown when there are no recorded steps -->
+                <RichTextBox Visibility="{Binding HasRecordedSteps, Converter={StaticResource InverseBoolToVisibility}}"
+                             BorderThickness="0" Background="Transparent" IsReadOnly="True"
+                             VerticalScrollBarVisibility="Auto" Padding="0">
+                    <FlowDocument FontSize="13" TextAlignment="Left">
+                        <Paragraph Margin="0,0,0,8" Foreground="{StaticResource TextPrimaryBrush}">
+                            <Run FontWeight="SemiBold" Text="How to use:"/>
+                        </Paragraph>
+                        <Paragraph Margin="0,0,0,6" Foreground="{StaticResource TextSecondaryBrush}">
+                            <Run Text="• " Foreground="{StaticResource PrimaryBrush}"/> Start the recording by selecting the "Record" option.
+                        </Paragraph>
+                        <Paragraph Margin="0,0,0,6" Foreground="{StaticResource TextSecondaryBrush}">
+                            <Run Text="• " Foreground="{StaticResource PrimaryBrush}"/> Manually execute the desired steps within the application.
+                        </Paragraph>
+                        <Paragraph Margin="0,0,0,6" Foreground="{StaticResource TextSecondaryBrush}">
+                            <Run Text="• " Foreground="{StaticResource PrimaryBrush}"/> Conclude the recording by pressing <Bold>[ESC]</Bold>.
+                        </Paragraph>
+                        <Paragraph Margin="0,0,0,6" Foreground="{StaticResource TextSecondaryBrush}">
+                            <Run Text="• " Foreground="{StaticResource PrimaryBrush}"/> Save the recorded steps via File → Export.
+                        </Paragraph>
+                        <Paragraph Margin="0,0,0,0" Foreground="{StaticResource TextSecondaryBrush}">
+                            <Run Text="• " Foreground="{StaticResource PrimaryBrush}"/> Use "Playback" to automatically reproduce the recorded actions.
+                        </Paragraph>
+                    </FlowDocument>
+                </RichTextBox>
+
+                <!-- Recorded steps – shown when recording has been stopped and steps exist -->
+                <Grid Visibility="{Binding HasRecordedSteps, Converter={StaticResource BoolToVisibility}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource TextPrimaryBrush}"
+                               Margin="0,0,0,12">
+                        <Run Text="Recorded steps"/>
+                        <Run Text=" ("/>
+                        <Run Text="{Binding RecordedStepsCount}"/>
+                        <Run Text=")"/>
+                    </TextBlock>
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                                  MinHeight="120">
+                        <ItemsControl ItemsSource="{Binding RecordedSteps}"
+                                      ItemTemplate="{StaticResource RecordedStepTemplate}"/>
+                    </ScrollViewer>
+                </Grid>
+            </Grid>
         </Border>
 
         <!-- Status bar -->

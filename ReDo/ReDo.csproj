@@ -76,7 +76,9 @@
     <Compile Include="Utility\KeysUtility.cs" />
     <Compile Include="Utility\MouseHook.cs" />
     <Compile Include="Utility\VirtualKeyCode.cs" />
+    <Compile Include="Converters\InverseBooleanToVisibilityConverter.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\RecordedStepViewModel.cs" />
     <Compile Include="Windows\BasicRecorderFloatingWindow.xaml.cs">
       <DependentUpon>BasicRecorderFloatingWindow.xaml</DependentUpon>
     </Compile>
