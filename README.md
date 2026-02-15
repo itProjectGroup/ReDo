@@ -54,5 +54,5 @@ In Visual Studio, go to Debug > Start Without Debugging (or press F5). Alternati
 ## Screenshots
 
 ### Application UI
-![UI](assets/Screenshot%202026-02-15%20170352.png)
+![UI](assets/EnhancedUI.png)
 
