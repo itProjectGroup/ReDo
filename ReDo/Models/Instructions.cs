@@ -50,5 +50,43 @@ namespace ReDo.Models
         public TimeSpan Delay { get; set; }
         public UtilityType Type { get; set; }
     }
+
+    /// <summary>
+    /// Click step that finds a UI element by matching a captured image template on screen,
+    /// then clicks its center (similar to UiPath "Click Image" activity).
+    /// </summary>
+    public class ImageClickInstruction : IInstructions
+    {
+        public ImageClickInstruction(
+            UtilityType type,
+            string imageBase64,
+            int templateWidth,
+            int templateHeight,
+            double matchThreshold = 0.85,
+            string label = null)
+        {
+            Type = type;
+            ImageBase64 = imageBase64;
+            TemplateWidth = templateWidth;
+            TemplateHeight = templateHeight;
+            MatchThreshold = matchThreshold;
+            Label = label;
+        }
+
+        /// <summary>PNG template image encoded as base64 for JSON export/import.</summary>
+        public string ImageBase64 { get; set; }
+
+        public int TemplateWidth { get; set; }
+        public int TemplateHeight { get; set; }
+
+        /// <summary>Minimum normalized cross-correlation score (0–1) to accept a match.</summary>
+        public double MatchThreshold { get; set; }
+
+        /// <summary>Optional display name for the captured element.</summary>
+        public string Label { get; set; }
+
+        public UtilityType Type { get; set; }
+    }
 }
+
 

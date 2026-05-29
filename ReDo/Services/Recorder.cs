@@ -4,6 +4,7 @@ using ReDo.Utility;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -86,6 +87,10 @@ namespace ReDo.Services
                 {
                     clickUtility.PerformClick(mInstr.X, mInstr.Y);
                 }
+                else if (instr != null && instr is ImageClickInstruction imgInstr)
+                {
+                    PerformImageClick(clickUtility, imgInstr);
+                }
                 else if (instr != null && instr is KeyboardInstruction kInstr)
                 {
                     KeySender keySender = new KeySender();
@@ -97,6 +102,51 @@ namespace ReDo.Services
                 }
             }
             MessageBox.Show("Playback - All Instructions Complete");
+        }
+
+        private void PerformImageClick(ClickUtility clickUtility, ImageClickInstruction instruction)
+        {
+            const int maxAttempts = 5;
+            const int retryDelayMs = 500;
+
+            Bitmap template;
+            try
+            {
+                template = ScreenCapture.Base64PngToBitmap(instruction.ImageBase64);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Invalid image template: {ex.Message}", "Image click failed",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            using (template)
+            {
+                for (int attempt = 1; attempt <= maxAttempts; attempt++)
+                {
+                    using (var screen = ScreenCapture.CaptureVirtualScreen())
+                    {
+                        var match = ImageMatcher.FindTemplate(screen, template, instruction.MatchThreshold);
+                        if (match != null)
+                        {
+                            clickUtility.PerformClick(match.CenterX, match.CenterY);
+                            return;
+                        }
+                    }
+
+                    if (attempt < maxAttempts)
+                        Thread.Sleep(retryDelayMs);
+                }
+            }
+
+            string label = string.IsNullOrEmpty(instruction.Label) ? "image element" : instruction.Label;
+            MessageBox.Show(
+                $"Could not find \"{label}\" on screen after {maxAttempts} attempts.\n" +
+                $"Try recapturing the image or lowering the match threshold.",
+                "Image click failed",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
         }
     }
 }
