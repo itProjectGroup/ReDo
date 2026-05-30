@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using ReDo.CustomEvents;
 using ReDo.Models;
 using ReDo.Services;
+using ReDo.Services.StepActions;
 using ReDo.Utility;
 using ReDo.ViewModels;
 using ReDo.Windows;
@@ -34,6 +35,7 @@ namespace ReDo
         MainWindowViewModel mainViewModel;
         Recorder recorder;
         RecordingOverlayWindow recordingOverlay;
+        IStepActionContext stepActionContext;
 
         public MainWindow()
         {
@@ -52,6 +54,7 @@ namespace ReDo
             };
 
             InitializeComponent();
+            stepActionContext = new MainWindowStepActionContext(this, mainViewModel);
 
             /*
              * Background Handlers
@@ -246,6 +249,52 @@ namespace ReDo
             if (step.InstructionIndex < 0 || step.InstructionIndex >= Recorder.instructions.Count) return;
             Recorder.instructions.RemoveAt(step.InstructionIndex);
             mainViewModel.RefreshRecordedSteps(Recorder.instructions);
+        }
+
+        private void AddStepButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (!AddActionPopup.IsOpen)
+                mainViewModel.ClearStepActionSearch();
+            AddActionPopup.IsOpen = !AddActionPopup.IsOpen;
+        }
+
+        private void AddActionPopup_OnOpened(object sender, EventArgs e)
+        {
+            AddStepSearchBox?.Focus();
+            AddStepSearchBox?.SelectAll();
+        }
+
+        private void AddStepAction_OnClick(object sender, RoutedEventArgs e)
+        {
+            AddActionPopup.IsOpen = false;
+            mainViewModel.ClearStepActionSearch();
+            var item = (sender as Button)?.Tag as StepActionItemViewModel;
+            if (item == null) return;
+
+            var provider = StepActionRegistry.Get(item.Id);
+            provider?.TryExecute(stepActionContext);
+        }
+
+        private void RecaptureImage_OnClick(object sender, RoutedEventArgs e)
+        {
+            var step = (sender as System.Windows.Controls.Button)?.Tag as RecordedStepViewModel;
+            if (step == null) return;
+
+            WindowState = WindowState.Minimized;
+            var win = new ImageCaptureWindow();
+            win.Owner = this;
+            if (win.ShowDialog() == true && !win.Cancelled)
+            {
+                var instr = Recorder.instructions[step.InstructionIndex] as ImageClickInstruction;
+                if (instr != null)
+                {
+                    instr.ImageBase64 = win.ResultImageBase64;
+                    instr.TemplateWidth = win.ResultWidth;
+                    instr.TemplateHeight = win.ResultHeight;
+                    mainViewModel.RefreshRecordedSteps(Recorder.instructions);
+                }
+            }
+            WindowState = WindowState.Normal;
         }
     }
 }
