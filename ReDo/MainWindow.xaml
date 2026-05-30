@@ -87,6 +87,52 @@
 
         <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
         <converters:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVisibility"/>
+        <converters:HexToBrushConverter x:Key="HexToBrush"/>
+
+        <Style x:Key="AddStepActionItemButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="row" Background="Transparent" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="row" Property="Background" Value="#F1F5F9"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DataTemplate x:Key="StepActionMenuItemTemplate" DataType="{x:Type viewModels:StepActionItemViewModel}">
+            <Button Style="{StaticResource AddStepActionItemButton}"
+                    Click="AddStepAction_OnClick" Tag="{Binding}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="8" Margin="0,0,12,0"
+                            Background="{Binding AccentColorHex, Converter={StaticResource HexToBrush}}">
+                        <fa:ImageAwesome Icon="{Binding Icon}" Width="16" Height="16" Foreground="White"
+                                         HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="13"
+                                   Foreground="{StaticResource TextPrimaryBrush}"/>
+                        <TextBlock Text="{Binding Description}" FontSize="12" Margin="0,2,0,0"
+                                   Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Grid>
+            </Button>
+        </DataTemplate>
 
         <DataTemplate x:Key="RecordedStepTemplate" DataType="{x:Type viewModels:RecordedStepViewModel}">
             <Border Background="#F1F5F9" CornerRadius="6" Padding="12,8" Margin="0,0,0,6">
@@ -112,6 +158,9 @@
                                     <DataTrigger Binding="{Binding StepType}" Value="Delay">
                                         <Setter Property="Background" Value="#64748B"/>
                                     </DataTrigger>
+                                    <DataTrigger Binding="{Binding StepType}" Value="ImageClick">
+                                        <Setter Property="Background" Value="#EA580C"/>
+                                    </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
@@ -122,6 +171,33 @@
                                TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
                     <!-- Column 4: Edit action per step type -->
                     <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Image click: Recapture template -->
+                        <Button Width="32" Height="32" Padding="0" ToolTip="Recapture image"
+                                Click="RecaptureImage_OnClick" Tag="{Binding}" Margin="0,0,4,0">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding StepType}" Value="ImageClick">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="4" Padding="4">
+                                        <fa:ImageAwesome Icon="PictureOutline" Width="16" Height="16" Foreground="{StaticResource PrimaryBrush}"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="b" Property="Background" Value="#E2E8F0"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
                         <!-- Click: Reselect position (target/crosshairs) -->
                         <Button Width="32" Height="32" Padding="0" ToolTip="Reselect position"
                                 Click="ReselectClick_OnClick" Tag="{Binding}" Margin="0,0,4,0">
@@ -273,50 +349,120 @@
                 Background="White" BorderBrush="{StaticResource SurfaceBorderBrush}" BorderThickness="1"
                 CornerRadius="10">
             <Grid>
-                <!-- How to use – shown when there are no recorded steps -->
-                <RichTextBox Visibility="{Binding HasRecordedSteps, Converter={StaticResource InverseBoolToVisibility}}"
-                             BorderThickness="0" Background="Transparent" IsReadOnly="True"
-                             VerticalScrollBarVisibility="Auto" Padding="0">
-                    <FlowDocument FontSize="13" TextAlignment="Left">
-                        <Paragraph Margin="0,0,0,8" Foreground="{StaticResource TextPrimaryBrush}">
-                            <Run FontWeight="SemiBold" Text="How to use:"/>
-                        </Paragraph>
-                        <Paragraph Margin="0,0,0,6" Foreground="{StaticResource TextSecondaryBrush}">
-                            <Run Text="• " Foreground="{StaticResource PrimaryBrush}"/> Start the recording by selecting the "Record" option.
-                        </Paragraph>
-                        <Paragraph Margin="0,0,0,6" Foreground="{StaticResource TextSecondaryBrush}">
-                            <Run Text="• " Foreground="{StaticResource PrimaryBrush}"/> Manually execute the desired steps within the application.
-                        </Paragraph>
-                        <Paragraph Margin="0,0,0,6" Foreground="{StaticResource TextSecondaryBrush}">
-                            <Run Text="• " Foreground="{StaticResource PrimaryBrush}"/> Conclude the recording by pressing <Bold>[ESC]</Bold>.
-                        </Paragraph>
-                        <Paragraph Margin="0,0,0,6" Foreground="{StaticResource TextSecondaryBrush}">
-                            <Run Text="• " Foreground="{StaticResource PrimaryBrush}"/> Save the recorded steps via File → Export.
-                        </Paragraph>
-                        <Paragraph Margin="0,0,0,0" Foreground="{StaticResource TextSecondaryBrush}">
-                            <Run Text="• " Foreground="{StaticResource PrimaryBrush}"/> Use "Playback" to automatically reproduce the recorded actions.
-                        </Paragraph>
-                    </FlowDocument>
-                </RichTextBox>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <!-- Recorded steps – shown when recording has been stopped and steps exist -->
-                <Grid Visibility="{Binding HasRecordedSteps, Converter={StaticResource BoolToVisibility}}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource TextPrimaryBrush}"
-                               Margin="0,0,0,12">
-                        <Run Text="Recorded steps"/>
-                        <Run Text=" ("/>
-                        <Run Text="{Binding RecordedStepsCount}"/>
-                        <Run Text=")"/>
-                    </TextBlock>
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
-                                  MinHeight="120">
+                <TextBlock Grid.Row="0" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource TextPrimaryBrush}"
+                           Margin="0,0,0,12">
+                    <Run Text="Steps"/>
+                    <Run Text=" ("/>
+                    <Run Text="{Binding RecordedStepsCount}"/>
+                    <Run Text=")"/>
+                </TextBlock>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                              MinHeight="100">
+                    <StackPanel>
+                        <TextBlock Visibility="{Binding HasRecordedSteps, Converter={StaticResource InverseBoolToVisibility}}"
+                                   Text="No steps yet. Record actions or tap + below to add steps."
+                                   Foreground="{StaticResource TextSecondaryBrush}" FontSize="13"
+                                   TextWrapping="Wrap" Margin="0,8,0,8"/>
                         <ItemsControl ItemsSource="{Binding RecordedSteps}"
                                       ItemTemplate="{StaticResource RecordedStepTemplate}"/>
-                    </ScrollViewer>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Add step (+) -->
+                <Grid Grid.Row="2" Margin="0,12,0,0">
+                    <Button x:Name="btnAddStep" HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Width="40" Height="40" Padding="0" ToolTip="Add step"
+                            Click="AddStepButton_OnClick">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="Cursor" Value="Hand"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="addBorder" Width="40" Height="40" CornerRadius="20"
+                                                    Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1.5">
+                                                <fa:ImageAwesome x:Name="addIcon" Icon="Plus" Width="14" Height="14"
+                                                                 Foreground="{StaticResource PrimaryBrush}"
+                                                                 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="addBorder" Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                                                    <Setter TargetName="addBorder" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                                    <Setter TargetName="addIcon" Property="Foreground" Value="White"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Popup x:Name="AddActionPopup" PlacementTarget="{Binding ElementName=btnAddStep}"
+                           Placement="Top" StaysOpen="False" AllowsTransparency="True"
+                           PopupAnimation="Fade" HorizontalOffset="0" VerticalOffset="-8"
+                           Opened="AddActionPopup_OnOpened">
+                        <Border Background="White" CornerRadius="10" Padding="6"
+                                BorderBrush="{StaticResource SurfaceBorderBrush}" BorderThickness="1"
+                                MinWidth="300" MaxWidth="340">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="16" ShadowDepth="4" Opacity="0.12" Color="Black"/>
+                            </Border.Effect>
+                            <StackPanel>
+                                <TextBlock Text="Add step" FontWeight="SemiBold" FontSize="12"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           Margin="12,6,12,8"/>
+
+                                <!-- Search -->
+                                <Border Margin="6,0,6,8" CornerRadius="8" BorderBrush="#E2E8F0"
+                                        BorderThickness="1" Background="#F8FAFC">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <fa:ImageAwesome Icon="Search" Width="14" Height="14"
+                                                         Foreground="{StaticResource TextSecondaryBrush}"
+                                                         Margin="10,0,4,0" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="AddStepSearchBox" Grid.Column="1"
+                                                 Text="{Binding StepActionSearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                                                 BorderThickness="0" Background="Transparent"
+                                                 Padding="4,8,10,8" FontSize="13"
+                                                 VerticalContentAlignment="Center"
+                                                 Foreground="{StaticResource TextPrimaryBrush}">
+                                            <TextBox.Resources>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="CornerRadius" Value="8"/>
+                                                </Style>
+                                            </TextBox.Resources>
+                                        </TextBox>
+                                    </Grid>
+                                </Border>
+
+                                <TextBlock Text="No actions match your search."
+                                           Visibility="{Binding ShowStepActionEmptyState, Converter={StaticResource BoolToVisibility}}"
+                                           Foreground="{StaticResource TextSecondaryBrush}" FontSize="12"
+                                           Margin="12,4,12,8" TextAlignment="Center"/>
+
+                                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                              HorizontalScrollBarVisibility="Disabled"
+                                              MaxHeight="280" Margin="0,0,2,4">
+                                    <ItemsControl ItemsSource="{Binding FilteredStepActions}"
+                                                  ItemTemplate="{StaticResource StepActionMenuItemTemplate}"/>
+                                </ScrollViewer>
+                            </StackPanel>
+                        </Border>
+                    </Popup>
                 </Grid>
             </Grid>
         </Border>

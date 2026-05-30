@@ -1,4 +1,5 @@
 using ReDo.Models;
+using ReDo.Services.StepActions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
+using System.Windows.Data;
 
 namespace ReDo.ViewModels
 {
@@ -15,6 +17,79 @@ namespace ReDo.ViewModels
         public MainWindowViewModel()
         {
             RecordedSteps = new ObservableCollection<RecordedStepViewModel>();
+            AvailableStepActions = new ObservableCollection<StepActionItemViewModel>();
+            LoadAvailableStepActions();
+        }
+
+        public ObservableCollection<StepActionItemViewModel> AvailableStepActions { get; }
+
+        public ICollectionView FilteredStepActions { get; private set; }
+
+        private string _stepActionSearchQuery = string.Empty;
+        public string StepActionSearchQuery
+        {
+            get => _stepActionSearchQuery;
+            set
+            {
+                if (_stepActionSearchQuery == value) return;
+                _stepActionSearchQuery = value ?? string.Empty;
+                OnPropertyChanged(nameof(StepActionSearchQuery));
+                RefreshStepActionFilter();
+            }
+        }
+
+        public bool ShowStepActionEmptyState =>
+            !string.IsNullOrWhiteSpace(StepActionSearchQuery) && !HasFilteredStepActions;
+
+        public bool HasFilteredStepActions
+        {
+            get
+            {
+                if (FilteredStepActions == null) return true;
+                return FilteredStepActions.Cast<object>().Any();
+            }
+        }
+
+        public void ClearStepActionSearch() => StepActionSearchQuery = string.Empty;
+
+        private void LoadAvailableStepActions()
+        {
+            AvailableStepActions.Clear();
+            foreach (var provider in StepActionRegistry.All)
+            {
+                AvailableStepActions.Add(new StepActionItemViewModel
+                {
+                    Id = provider.Id,
+                    Title = provider.Title,
+                    Description = provider.Description,
+                    Icon = provider.Icon,
+                    AccentColorHex = provider.AccentColorHex
+                });
+            }
+
+            FilteredStepActions = CollectionViewSource.GetDefaultView(AvailableStepActions);
+            FilteredStepActions.Filter = FilterStepAction;
+        }
+
+        private bool FilterStepAction(object item)
+        {
+            if (!(item is StepActionItemViewModel action))
+                return false;
+
+            if (string.IsNullOrWhiteSpace(StepActionSearchQuery))
+                return true;
+
+            var query = StepActionSearchQuery.Trim();
+            return action.Title.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0
+                || action.Description.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0
+                || action.Id.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        private void RefreshStepActionFilter()
+        {
+            FilteredStepActions?.Refresh();
+            OnPropertyChanged(nameof(HasFilteredStepActions));
+            OnPropertyChanged(nameof(ShowStepActionEmptyState));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -86,6 +161,21 @@ namespace ReDo.ViewModels
                         TypeLabel = "Click",
                         StepType = "Click",
                         Description = $"Click at ({mouse.X}, {mouse.Y})"
+                    });
+                }
+                else if (item is ImageClickInstruction imageClick)
+                {
+                    string label = string.IsNullOrEmpty(imageClick.Label)
+                        ? $"{imageClick.TemplateWidth}×{imageClick.TemplateHeight} px"
+                        : imageClick.Label;
+                    RecordedSteps.Add(new RecordedStepViewModel
+                    {
+                        Index = displayIndex,
+                        InstructionIndex = i,
+                        TypeLabel = "Image",
+                        StepType = "ImageClick",
+                        Description = $"Click image ({label})",
+                        ImagePreviewBase64 = imageClick.ImageBase64
                     });
                 }
                 else if (item is KeyboardInstruction key)

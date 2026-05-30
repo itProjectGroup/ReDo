@@ -12,9 +12,11 @@ namespace ReDo.ViewModels
         public int InstructionIndex { get; set; }
         public string TypeLabel { get; set; }
         public string Description { get; set; }
-        /// <summary>For styling: "Click", "Key", "Delay".</summary>
+        /// <summary>For styling: "Click", "ImageClick", "Key", "Delay".</summary>
         public string StepType { get; set; }
         /// <summary>Wait/delay in milliseconds (for Delay steps only).</summary>
         public double DelayMilliseconds { get; set; }
+        /// <summary>Base64 PNG preview for image click steps.</summary>
+        public string ImagePreviewBase64 { get; set; }
     }
 }

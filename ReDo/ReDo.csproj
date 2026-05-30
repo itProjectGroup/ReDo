@@ -71,12 +71,21 @@
     <Compile Include="Services\Recorder.cs" />
     <Compile Include="Services\TimerService.cs" />
     <Compile Include="Utility\ClickUtility.cs" />
+    <Compile Include="Utility\ImageMatcher.cs" />
+    <Compile Include="Utility\ScreenCapture.cs" />
     <Compile Include="Utility\KeyboardHook.cs" />
     <Compile Include="Utility\KeySender.cs" />
     <Compile Include="Utility\KeysUtility.cs" />
     <Compile Include="Utility\MouseHook.cs" />
     <Compile Include="Utility\VirtualKeyCode.cs" />
+    <Compile Include="Converters\HexToBrushConverter.cs" />
     <Compile Include="Converters\InverseBooleanToVisibilityConverter.cs" />
+    <Compile Include="Services\StepActions\BuiltInStepActions.cs" />
+    <Compile Include="Services\StepActions\IStepActionContext.cs" />
+    <Compile Include="Services\StepActions\IStepActionProvider.cs" />
+    <Compile Include="Services\StepActions\MainWindowStepActionContext.cs" />
+    <Compile Include="Services\StepActions\StepActionRegistry.cs" />
+    <Compile Include="ViewModels\StepActionItemViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\RecordedStepViewModel.cs" />
     <Compile Include="Windows\BasicRecorderFloatingWindow.xaml.cs">
@@ -87,6 +96,9 @@
     </Compile>
     <Compile Include="Windows\ClickCaptureWindow.xaml.cs">
       <DependentUpon>ClickCaptureWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\ImageCaptureWindow.xaml.cs">
+      <DependentUpon>ImageCaptureWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\KeyCaptureWindow.xaml.cs">
       <DependentUpon>KeyCaptureWindow.xaml</DependentUpon>
@@ -115,6 +127,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\ClickCaptureWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\ImageCaptureWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
