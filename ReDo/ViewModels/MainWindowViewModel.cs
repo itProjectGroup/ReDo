@@ -154,17 +154,22 @@ namespace ReDo.ViewModels
                 displayIndex++;
                 if (item is MouseInstruction mouse)
                 {
+                    bool isDoubleClick = mouse.Type == UtilityType.DoubleClick;
+
                     RecordedSteps.Add(new RecordedStepViewModel
                     {
                         Index = displayIndex,
                         InstructionIndex = i,
-                        TypeLabel = "Click",
-                        StepType = "Click",
-                        Description = $"Click at ({mouse.X}, {mouse.Y})"
+                        TypeLabel = isDoubleClick ? "Double Click" : "Click", 
+                        StepType = isDoubleClick ? "DoubleClick" : "Click",
+                        Description = isDoubleClick
+                            ? $"Double Click at ({mouse.X}, {mouse.Y})"
+                            : $"Click at ({mouse.X}, {mouse.Y})"
                     });
                 }
                 else if (item is ImageClickInstruction imageClick)
                 {
+                    bool isDoubleClickImage = imageClick.Type == UtilityType.ImageDoubleClick;
                     string label = string.IsNullOrEmpty(imageClick.Label)
                         ? $"{imageClick.TemplateWidth}×{imageClick.TemplateHeight} px"
                         : imageClick.Label;
@@ -172,8 +177,8 @@ namespace ReDo.ViewModels
                     {
                         Index = displayIndex,
                         InstructionIndex = i,
-                        TypeLabel = "Image",
-                        StepType = "ImageClick",
+                        TypeLabel = isDoubleClickImage ? "DoubleImageClick" : "Image",
+                        StepType = isDoubleClickImage? "DoubleImageClick" :"ImageClick",
                         Description = $"Click image ({label})",
                         ImagePreviewBase64 = imageClick.ImageBase64
                     });

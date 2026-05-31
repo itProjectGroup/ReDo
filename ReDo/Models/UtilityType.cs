@@ -11,6 +11,8 @@ namespace ReDo.Models
         Click,
         ImageClick,
         Keys,
-        Delay
+        Delay,
+        ImageDoubleClick,
+        DoubleClick
     }
 }

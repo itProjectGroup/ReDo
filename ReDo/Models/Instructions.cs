@@ -62,7 +62,7 @@ namespace ReDo.Models
             string imageBase64,
             int templateWidth,
             int templateHeight,
-            double matchThreshold = 0.85,
+            double matchThreshold = 0.65, //updated threshold to 0.65
             string label = null)
         {
             Type = type;

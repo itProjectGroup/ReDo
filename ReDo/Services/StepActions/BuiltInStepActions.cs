@@ -14,6 +14,8 @@ namespace ReDo.Services.StepActions
             StepActionRegistry.Register(new ImageClickAction());
             StepActionRegistry.Register(new KeyPressAction());
             StepActionRegistry.Register(new WaitAction());
+            StepActionRegistry.Register(new CoordinateDoubleClickAction());
+            StepActionRegistry.Register(new ImageDoubleClickAction());
         }
 
         private sealed class CoordinateClickAction : IStepActionProvider
@@ -43,7 +45,33 @@ namespace ReDo.Services.StepActions
                 return false;
             }
         }
+        private sealed class CoordinateDoubleClickAction : IStepActionProvider
+        {
+            public string Id => "double-click";
+            public string Title => " Double Click";
+            public string Description => "Double Click at a screen position (x, y)";
+            public FontAwesomeIcon Icon => FontAwesomeIcon.Crosshairs;
+            public string AccentColorHex => "#0D2494";
+            public bool TryExecute(IStepActionContext context)
+            {
+                context.MinimizeForCapture();
+                var win = new ClickCaptureWindow { Owner = context.OwnerWindow };
+                try
+                {
+                    if (win.ShowDialog() == true && !win.Cancelled)
+                    {
+                        context.AppendInstruction(new MouseInstruction(UtilityType.DoubleClick, win.ResultX, win.ResultY));
+                        return true;
+                    }
+                }
+                finally
+                {
+                    context.RestoreAfterCapture();
+                }
+                return false;
 
+            }
+        }
         private sealed class ImageClickAction : IStepActionProvider
         {
             public string Id => "image-click";
@@ -116,6 +144,39 @@ namespace ReDo.Services.StepActions
                 }
                 return false;
             }
+        }
+        private sealed class ImageDoubleClickAction : IStepActionProvider
+        {
+            public string Id => "image-double-click";
+            public string Title => "Image double click";
+            public string Description => "Find UI element by image, then double click";
+            public FontAwesomeIcon Icon => FontAwesomeIcon.PictureOutline;
+            public string AccentColorHex => "#DC2626"; 
+
+            public bool TryExecute(IStepActionContext context)
+            {
+                context.MinimizeForCapture();
+                var win = new ImageCaptureWindow { Owner = context.OwnerWindow };
+                try
+                {
+                    if (win.ShowDialog() == true && !win.Cancelled)
+                    {
+
+                        context.AppendInstruction(new ImageClickInstruction(
+                            UtilityType.ImageDoubleClick,
+                            win.ResultImageBase64,
+                            win.ResultWidth,
+                            win.ResultHeight));
+                        return true;
+                    }
+                }
+                finally
+                {
+                    context.RestoreAfterCapture();
+                }
+                return false;
+            }
+
         }
     }
 }

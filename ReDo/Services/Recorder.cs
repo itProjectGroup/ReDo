@@ -83,13 +83,28 @@ namespace ReDo.Services
             ClickUtility clickUtility = new ClickUtility();
             foreach (IInstructions instr in instructions)
             {
-                if (instr != null && instr is MouseInstruction mInstr )
+                if (instr != null && instr is MouseInstruction mInstr)
                 {
-                    clickUtility.PerformClick(mInstr.X, mInstr.Y);
+                    if (mInstr.Type == UtilityType.DoubleClick)
+                    {
+                        clickUtility.PerformDoubleClick(mInstr.X, mInstr.Y);
+                    }
+                    else
+                    {
+                        clickUtility.PerformClick(mInstr.X, mInstr.Y);
+                    }
                 }
                 else if (instr != null && instr is ImageClickInstruction imgInstr)
                 {
-                    PerformImageClick(clickUtility, imgInstr);
+                    if (imgInstr.Type == UtilityType.ImageClick || imgInstr.Type == UtilityType.ImageDoubleClick)
+                    {
+
+                          PerformImageClick(clickUtility, imgInstr);
+                    }
+                    else
+                    {
+
+                    }
                 }
                 else if (instr != null && instr is KeyboardInstruction kInstr)
                 {
@@ -100,6 +115,7 @@ namespace ReDo.Services
                 {
                     Thread.Sleep((int)dInstr.Delay.TotalMilliseconds);
                 }
+               
             }
             MessageBox.Show("Playback - All Instructions Complete");
         }
@@ -130,8 +146,15 @@ namespace ReDo.Services
                         var match = ImageMatcher.FindTemplate(screen, template, instruction.MatchThreshold);
                         if (match != null)
                         {
-                            clickUtility.PerformClick(match.CenterX, match.CenterY);
-                            return;
+                            if (instruction.Type == UtilityType.ImageClick)
+                            {
+                                clickUtility.PerformClick(match.CenterX, match.CenterY);
+                            }
+                            else
+                            {
+                                clickUtility.PerformDoubleClick(match.CenterX, match.CenterY);
+                            }
+                                return;
                         }
                     }
 
